@@ -1,0 +1,17 @@
+{
+  "name": "micro-status-board",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently --names \"backend,frontend\" --prefix name \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\""
+  },
+  "author": "Michael Yirdaw",
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "typescript": "^5.9.2"
+  }
+}
