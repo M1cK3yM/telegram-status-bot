@@ -1,5 +1,5 @@
 import { Status } from '@shared/types';
-import { addStatus } from '../store/status_store';
+import { addStatus, getLatestStatuses } from '../store/status_store';
 import { Request, Response } from 'express';
 
 export async function createStatus(req: Request, res: Response) {
@@ -13,4 +13,8 @@ export async function createStatus(req: Request, res: Response) {
   addStatus(newStatus);
 
   res.json({ success: true, message: "Status posted" });
+}
+
+export async function latestStatuses(req: Request, res: Response) {
+  res.json({ statuses: getLatestStatuses() });
 }
