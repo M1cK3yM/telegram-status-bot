@@ -24,5 +24,9 @@ export default defineConfig(({ mode }) => {
     server: {
       allowedHosts,
     },
+    build: {
+      outDir: path.resolve(__dirname, '../backend/dist/backend/src/public'),
+      emptyOutDir: true // Clears old build files
+    }
   };
 });

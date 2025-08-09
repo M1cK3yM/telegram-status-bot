@@ -11,6 +11,7 @@
       ]
     },
     "tsBuildInfoFile": "../tmp/tsconfig.app.tsbuildinfo",
+    "moduleResolution": "bundler",
     "useDefineForClassFields": true,
     "lib": [
       "ES2022",

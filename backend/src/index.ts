@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 import { router as statusRouter } from "./routes/status_route";
 import dotenv from 'dotenv';
 import { bot } from "./commands";
@@ -15,7 +16,8 @@ app.use((req, res, next) => {
   next();
 });
 app.use(statusRouter);
-
+app.use(express.static(path.join(__dirname, 'public')));
+console.log("Serving static files from:", path.join(__dirname, 'public'));
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 app.listen(port, () => console.log(`Backend running on http://localhost:${port}`));
 bot.launch();
