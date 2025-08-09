@@ -1,8 +1,23 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  @apply bg-white dark:bg-gray-900;
+  @apply bg-white dark:bg-black text-black dark:text-white;
+}
+
+.spinner {
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

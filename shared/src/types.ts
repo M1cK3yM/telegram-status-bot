@@ -4,3 +4,7 @@ export interface Status {
   status: string;
   time?: Date;
 }
+
+export interface StatusResponse {
+  statuses: Status[];
+}

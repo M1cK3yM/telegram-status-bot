@@ -1,11 +1,12 @@
-import { Status } from "@shared/types";
+import { Status, StatusResponse } from "@shared/types";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export async function fetchLatestStatuses(): Promise<Status[]> {
   const res = await fetch(`${BASE_URL}/latest`);
   if (!res.ok) throw new Error('Failed to fetch statuses');
-  return res.json();
+  const data: StatusResponse = await res.json();
+  return data.statuses;
 }
 
 export async function postStatus(statusData: {
