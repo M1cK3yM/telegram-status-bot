@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { postStatus } from './api/status_api';
+import { useTelegramUser } from './hooks/telegram-hook';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [status, setStatus] = useState('')
+  const [loading, setLoading] = useState(false);
+  const user = useTelegramUser();
+
+  const handlePost = async () => {
+    if (!status.trim()) {
+      alert('Please enter a status!');
+      return;
+    }
+    setLoading(true);
+    if (!user) {
+      setLoading(false);
+      alert('use telegram web app');
+      return;
+    }
+
+    try {
+      await postStatus({ userId: user!.id, name: user!.first_name, status });
+      setStatus('');
+      alert('Status posted!');
+    } catch (e) {
+      alert('Failed to post status. ' + e);
+    } finally {
+      setLoading(false);
+      return;
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <main className="max-w-xl mx-auto p-6">
+      {user && <h2 className="text-xl mb-4">Hi, {user.first_name}!</h2>}
+
+      <h1 className="text-3xl font-bold mb-4">Micro Status Board</h1>
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="What's on your mind today?"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <Button onClick={handlePost}>Post Status</Button>
+    </main>
   )
 }
-
-export default App
