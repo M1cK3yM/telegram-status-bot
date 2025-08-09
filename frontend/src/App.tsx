@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { fetchLatestStatuses, postStatus } from './api/status_api';
 import { useTelegramUser } from './hooks/telegram-hook';
 import { motion, AnimatePresence } from 'motion/react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, X } from 'lucide-react';
 import { Status } from '@shared/types';
+import { toast, Toaster } from 'sonner';
 
 export default function App() {
   const [status, setStatus] = useState('');
@@ -40,7 +41,16 @@ export default function App() {
 
         setStatuses(allStatuses);
       } catch (e) {
-        alert('Failed to load statuses: ' + e);
+        toast("Failed to load statuses!", {
+          action: {
+            label: <X className="w-4 h-4" />,
+            onClick: () => console.log("clicked")
+          },
+          actionButtonStyle: {
+            backgroundColor: "white",
+            color: "black",
+          }
+        });
       }
     }
 
@@ -49,13 +59,31 @@ export default function App() {
 
   const handlePost = async () => {
     if (!status.trim()) {
-      alert('Please enter a status!');
+      toast("Please enter a status!", {
+        action: {
+          label: <X className="w-4 h-4" />,
+          onClick: () => console.log("clicked")
+        },
+        actionButtonStyle: {
+          backgroundColor: "white",
+          color: "black",
+        }
+      });
       return;
     }
     setLoading(true);
     if (!user) {
       setLoading(false);
-      alert('Use Telegram Web App');
+      toast("Please use Telegram wep app", {
+        action: {
+          label: "Open in Telegram",
+          onClick: () => window.location.href = "https://t.me/micro_status_bot"
+        },
+        actionButtonStyle: {
+          backgroundColor: "black",
+          color: "white",
+        }
+      });
       return;
     }
 
@@ -64,9 +92,27 @@ export default function App() {
       await postStatus(newStatus);
       setUpdateList(!updateList);
       setStatus('');
-      alert('Status posted!');
-    } catch (e) {
-      alert('Failed to post status. ' + e);
+      toast("Status Posted!", {
+        action: {
+          label: <X className="w-4 h-4" />,
+          onClick: () => console.log("clicked")
+        },
+        actionButtonStyle: {
+          backgroundColor: "white",
+          color: "black",
+        }
+      });
+    } catch {
+      toast("Failed to post status!", {
+        action: {
+          label: <X className="w-4 h-4" />,
+          onClick: () => console.log("clicked")
+        },
+        actionButtonStyle: {
+          backgroundColor: "white",
+          color: "black",
+        }
+      });
     } finally {
       setLoading(false);
     }
@@ -158,6 +204,7 @@ export default function App() {
           </li>
         ))}
       </ul>
+      <Toaster />
     </main>
   );
 }
