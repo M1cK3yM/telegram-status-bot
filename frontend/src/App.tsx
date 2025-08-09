@@ -3,12 +3,14 @@ import { fetchLatestStatuses, postStatus } from './api/status_api';
 import { useTelegramUser } from './hooks/telegram-hook';
 import { motion, AnimatePresence } from 'motion/react';
 import { Moon, Sun } from 'lucide-react';
+import { Status } from '@shared/types';
 
 export default function App() {
   const [status, setStatus] = useState('');
-  const [statuses, setStatuses] = useState<{ id: string; text: string; name?: string }[]>([]);
+  const [statuses, setStatuses] = useState<Status[]>([]);
   const [loading, setLoading] = useState(false);
   const user = useTelegramUser();
+  const [updateList, setUpdateList] = useState(true);
 
   const toggleSwitch = () => {
     setDarkMode(!darkMode);
@@ -36,16 +38,14 @@ export default function App() {
           return;
         }
 
-        const userStatuses = allStatuses
-          .map(s => ({ id: s.userId, text: s.status, name: s.name }));
-        setStatuses(userStatuses);
+        setStatuses(allStatuses);
       } catch (e) {
         alert('Failed to load statuses: ' + e);
       }
     }
 
     loadStatuses();
-  }, [user]);
+  }, [user, updateList]);
 
   const handlePost = async () => {
     if (!status.trim()) {
@@ -60,8 +60,9 @@ export default function App() {
     }
 
     try {
-      await postStatus({ userId: user!.id, name: user!.first_name, status });
-      setStatuses([...statuses, { id: user!.id, text: status, name: user.first_name }]);
+      const newStatus: Status = { userId: user!.id, name: user!.first_name, status };
+      await postStatus(newStatus);
+      setUpdateList(!updateList);
       setStatus('');
       alert('Status posted!');
     } catch (e) {
@@ -143,14 +144,16 @@ export default function App() {
       </div>
 
       <ul className="space-y-2 mb-4">
-        {statuses.map(({ id, text, name }) => (
+        {statuses.map(({ userId, status, name, time }) => (
           <li
-            key={id}
+            key={userId}
             className="flex items-center justify-between border border-gray-300 rounded-xl px-4 py-3 text-sm"
           >
             <div className="flex flex-col">
-              <span>{text}</span>
-              <small className="text-gray-500"> {name || 'Unknown'}</small>
+              <span>{status}</span>
+              <small className="text-gray-500">
+                {name || 'Unknown'} • {time ? new Date(time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : ''}
+              </small>
             </div>
           </li>
         ))}
