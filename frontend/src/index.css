@@ -17,7 +17,7 @@ body {
 }
 
 .dark .spinner {
-  border-top-color: white; /* changes in dark mode */
+  border-top-color: black; /* changes in dark mode */
 }
 
 @keyframes spin {

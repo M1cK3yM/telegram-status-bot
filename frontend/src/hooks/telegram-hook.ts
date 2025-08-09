@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-type TelegramUser = {
+export type TelegramUser = {
   id: string;
   first_name: string;
 };
