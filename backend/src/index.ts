@@ -3,12 +3,17 @@ import cors from "cors";
 import { router as statusRouter } from "./routes/status_route";
 import dotenv from 'dotenv';
 import { bot } from "./commands";
+import { logger } from "./utils/logger";
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.path} - ${req.ip}`);
+  next();
+});
 app.use(statusRouter);
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
