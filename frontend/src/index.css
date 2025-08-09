@@ -16,6 +16,10 @@ body {
   animation: spin 1s linear infinite;
 }
 
+.dark .spinner {
+  border-top-color: white; /* changes in dark mode */
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

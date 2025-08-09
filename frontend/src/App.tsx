@@ -1,12 +1,29 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import { fetchLatestStatuses, postStatus } from './api/status_api';
 import { useTelegramUser } from './hooks/telegram-hook';
+import { motion, AnimatePresence } from 'motion/react';
+import { Moon, Sun } from 'lucide-react';
 
 export default function App() {
   const [status, setStatus] = useState('');
   const [statuses, setStatuses] = useState<{ id: string; text: string; name?: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const user = useTelegramUser();
+
+  const toggleSwitch = () => {
+    setDarkMode(!darkMode);
+  }
+
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     if (!user) return;
@@ -55,12 +72,55 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen max-w-xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      {user ? (
-        <h1 className="text-xl font-bold mb-4">Hi, {user.first_name}! 👋</h1>
-      ) : (
-        <h1 className="text-xl font-bold mb-4">Your Status</h1>
-      )}
+    <main className="min-h-screen max-w-xl mx-auto p-6 dark:bg-black bg-white rounded-xl shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        {user ? (
+          <h1 className="text-xl font-bold">Hi, {user.first_name}! 👋</h1>
+        ) : (
+          <h1 className="text-xl font-bold">Your Status</h1>
+        )}
+        <button
+          className="w-18 h-9 flex rounded-full items-center bg-gray-300 dark:bg-gray-700 p-1"
+          style={{
+            justifyContent: "flex-" + (darkMode ? "end" : "start"),
+          }}
+          onClick={toggleSwitch}
+        >
+          <motion.div
+            className="flex items-center justify-center h-8 w-8 bg-gray-800 dark:bg-white rounded-full"
+            layout
+            transition={{
+              type: "spring",
+              visualDuration: 0.2,
+              bounce: 0.4,
+            }}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {darkMode ? (
+                <motion.div
+                  key="moon"
+                  initial={{ opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 90 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Moon size={17} className="text-black" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="sun"
+                  initial={{ opacity: 0, rotate: 90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: -90 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Sun size={17} className="text-white" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </button>
+      </div>
 
       <div className="flex items-center mb-6 space-x-2">
         <input
@@ -74,7 +134,7 @@ export default function App() {
         <button
           onClick={handlePost}
           disabled={loading}
-          className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-800 text-white hover:bg-gray-900 transition-colors text-3xl"
+          className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-800 dark:bg-white text-white dark:text-gray-800 dark:hover:bg-gray-400 dark:hover:text-gray-100 hover:bg-gray-900 transition-colors text-3xl"
           aria-label="Post status"
           title="Post status"
         >
@@ -92,7 +152,6 @@ export default function App() {
               <span>{text}</span>
               <small className="text-gray-500"> {name || 'Unknown'}</small>
             </div>
-
           </li>
         ))}
       </ul>
